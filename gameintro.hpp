@@ -108,7 +108,7 @@ int BoardSize() {
        return ID;
     }
     
-    return 1;
+    return 1;//defauly 8x8
     
 }
 
@@ -168,8 +168,35 @@ void HowToPlay() {
 }
 
 void Options() {
-    std::cout << "Open Options" << std::flush;
-    while(key.getch() != 27);
+    
+    std::ifstream file;
+    file.open("Files/Option.txt");
+
+    if(!file.is_open()) {
+        system("clear");
+        std::cout << "Error Open the File !\n" << std::flush;
+        exit(0);
+    } 
+    else {
+        int x = 0;
+        int y = 15;
+        gotoxy(x,y);
+        std::string text = "";
+        while(!file.eof()) {
+            text = "";
+            getline(file,text);
+            std::cout << text <<std::endl << std::flush;
+            gotoxy(x, ++y);
+        }
+
+        file.close();
+        
+        gotoxy(x, ++y);
+        std::cout << "\033[32;1m To go to the Main Menu,please click enter [ESC] \033[0m" << std::flush;
+    }
+    
+    
+    while(key.getch() != 27);//27 = esc
 
 }
 

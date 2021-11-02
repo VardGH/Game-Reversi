@@ -17,4 +17,3 @@ class keyboard{
 };
 
 void gotoxy(int,int);
-    

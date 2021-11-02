@@ -2,6 +2,7 @@
 #include "termio.hpp"
 #include "show.hpp"
 #include "gameintro.hpp"
+#include "board.hpp"
 
 int main()
 {
@@ -15,8 +16,19 @@ int main()
 	
 	}
 	
-	system("clear");
-	std::cout << "Start Game: " << std::endl;
+	key.reset_terminal();
 	
+	system("clear");
+	
+	print_board();	
+	
+
+	while (true) {
+
+	    _Keypress();
+
+	}
+
+
 	return 0;
 }

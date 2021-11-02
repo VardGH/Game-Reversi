@@ -1,0 +1,21 @@
+		OPTIONS
+		
+	 W ↑ UP
+	 S ↓ DOWN
+	 A ← LEFT
+	 D → RIGHT
+			
+                 
+                 W
+                 ᐱ
+                 |
+                 |
+                 |
+         A ᐸ——————————ᐳ D
+                 |
+                 |
+                 |
+                 ᐯ
+                 S    
+                 
+	                
