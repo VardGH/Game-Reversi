@@ -22,13 +22,13 @@ int main()
 	
 	print_board();	
 	
-
-	while (true) {
+	while (game_continues) {
 
 	    _Keypress();
 
 	}
-
-
+	
+	who_won();
+	
 	return 0;
 }
