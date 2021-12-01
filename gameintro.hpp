@@ -2,7 +2,7 @@
 
 #include <string>
 #include <fstream>
-#include "show.hpp"
+#include "menu.hpp"
 #include "termio.hpp"
 
 void temp_Menu();
@@ -24,18 +24,15 @@ static int last_Y = 15;
 keyboard key;
 
 void Menu_Keypress() {
-
     if(key.kbhit()) {
         last_Y = first_Y;
         last_index_Menu = first_index_Menu;
-        
         switch(key.getch()) {
-        
-        case 10 : {   
+        case 10 : {
             MainMenu(first_index_Menu);
             system("clear");
-            print_GameName();
-            print_Menu(first_index_Menu);
+            GameMenu::print_GameName();
+            GameMenu::print_Menu(first_index_Menu);
             break;
         }
         case 'w': {
@@ -76,6 +73,7 @@ void MainMenu(int index_Menu)
             
             start = false;
             StartGame();
+            std::cout << "\033[1;31m" << __FILE__ << " " << __FUNCTION__ << " " << __LINE__ << "\033[0m" << std::endl;
             break;
         }
         case 1 : HowToPlay(); break;
@@ -84,6 +82,7 @@ void MainMenu(int index_Menu)
         case 4 : Score(); break;
         case 5 : {
             system("clear");
+            std::cout << "\033[1;31m" << __FILE__ << " " << __FUNCTION__ << " " << __LINE__ << "\033[0m" << std::endl;
             exit(0);
         }
     }
@@ -143,6 +142,7 @@ void HowToPlay() {
     if(!file.is_open()) {
         system("clear");
         std::cout << "Error Open the File !\n" << std::flush;
+        std::cout << "\033[1;31m" << __FILE__ << " " << __FUNCTION__ << " " << __LINE__ << "\033[0m" << std::endl;
         exit(0);
     } 
     else {
@@ -284,6 +284,7 @@ void temp_Menu()
     gotoxy(65, first_Y);
     std::cout << std::flush;
 }
+
 
 
 

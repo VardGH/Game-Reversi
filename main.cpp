@@ -1,34 +1,25 @@
 #include <iostream>
+
 #include "termio.hpp"
-#include "show.hpp"
+#include "menu.hpp"
 #include "gameintro.hpp"
-#include "board.hpp"
+#include "gameboard.hpp"
 
 int main()
 {
-	print_Loading();
-	print_GameName();
-	print_Menu();
-	
-	while (start){
-		
-	   Menu_Keypress();
-	
-	}
-	
-	key.reset_terminal();
-	
-	system("clear");
-	
-	print_board();	
-	
-	while (game_continues) {
+    GameMenu::print_Loading();
+    GameMenu::print_GameName();
+    GameMenu::print_Menu();
 
-	    _Keypress();
+    while (start){
+        Menu_Keypress();
+    }
 
-	}
-	
-	who_won();
-	
-	return 0;
+    key.reset_terminal();
+
+    system("clear");
+    GameBoard board;
+    board.play();
+
+    return 0;
 }
