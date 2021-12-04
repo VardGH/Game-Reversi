@@ -2,13 +2,13 @@
 #include <unistd.h>
 
 #include "termio.hpp"
-//#include "gameintro.hpp"
+#include "keyhandler.hpp"
 #include "gameboard.hpp"
 
 void GameBoard::play()
 {
     printBoard();
-    while (isRunning) {
+    while (m_isRunning) {
         handleKeyPress();
     }
     printWinner();
@@ -18,8 +18,8 @@ void GameBoard::printBoard()
 {
     system("clear");
 
-    mat[3][3] = mat[4][4] = 'c';//spitak
-    mat[3][4] = mat[4][3] = 'b';//sev
+    m_mat[3][3] = m_mat[4][4] = 'c';//spitak
+    m_mat[3][4] = m_mat[4][3] = 'b';//sev
 
     int x = 60;
     int y = 10;
@@ -43,9 +43,9 @@ void GameBoard::printBoard()
 
         for (int i = 0; i < 8; ++i) {
             std::cout << "\u007C " << std::flush;//uxahayac
-            if (mat[k][i] == 'b') {
+            if (m_mat[k][i] == 'b') {
                 std::cout << "\u25CB";
-            } else if (mat[k][i] == 'c') {
+            } else if (m_mat[k][i] == 'c') {
                 std::cout << "\u25CF";
             } else std::cout << " ";
             std::cout << " ";
@@ -68,36 +68,34 @@ void GameBoard::printBoard()
 
 bool GameBoard::checkLeft()
 {
-    int i = (_Y - 11 ) / 2;
-    int j = (_X - 61 ) / 4 - 1;
+    int i = (m_yCoord - 11 ) / 2;
+    int j = (m_xCoord - 61 ) / 4 - 1;
     int k = j;
-    char ball_color;
+    char ballColor;
 
-    if ( color % 2 == 0 ) {
-
-        ball_color = 'b';
-    }
-    else {
-        ball_color = 'c';
+    if ( m_color % 2 == 0 ) {
+        ballColor = 'b';
+    } else {
+        ballColor = 'c';
     }
 
-    while ( j >= 0 && mat[i][j]!=0 && mat[i][j] != ball_color ) {
+    while ( j >= 0 && m_mat[i][j]!=0 && m_mat[i][j] != ballColor ) {
         --j;
     }
 
-    if ( j != -1 && mat[i][j]!=0 && j != k ) {
+    if ( j != -1 && m_mat[i][j]!=0 && j != k ) {
         for(int h = j + 1; h <= k; ++h ) {
-            mat[i][h] = ball_color;
+            m_mat[i][h] = ballColor;
             gotoxy( 4 * h + 61 , 2 * i + 11 );
-            if( ball_color == 'b' ) {
-                ++blackCount;
-                --whiteCount;
+            if( ballColor == 'b' ) {
+                ++m_blackCount;
+                --m_whiteCount;
             } else  {
-                --blackCount;
-                ++whiteCount;
+                --m_blackCount;
+                ++m_whiteCount;
             }
 
-            ( ball_color == 'b' ) ?  std::cout << "\u25CB" << std::flush : std::cout << "\u25CF" << std::flush ;
+            ( ballColor == 'b' ) ?  std::cout << "\u25CB" << std::flush : std::cout << "\u25CF" << std::flush ;
         }
         return true;
     }
@@ -106,35 +104,33 @@ bool GameBoard::checkLeft()
 
 bool GameBoard::checkRight()
 {
-    int i = (_Y - 11 ) / 2;
-    int j = (_X - 61 ) / 4 + 1;
+    int i = (m_yCoord - 11 ) / 2;
+    int j = (m_xCoord - 61 ) / 4 + 1;
     int k = j;
-    char ball_color;
+    char ballColor;
 
-    if ( color % 2 == 0 ) {
-
-        ball_color = 'b';
-    }
-    else {
-        ball_color = 'c';
+    if ( m_color % 2 == 0 ) {
+        ballColor = 'b';
+    } else {
+        ballColor = 'c';
     }
 
-    while ( j <=7 && mat[i][j]!=0 && mat[i][j] != ball_color ) {
+    while ( j <=7 && m_mat[i][j]!=0 && m_mat[i][j] != ballColor ) {
         ++j;
     }
 
-    if ( j != 8 && mat[i][j]!=0 && j != k ) {
+    if ( j != 8 && m_mat[i][j]!=0 && j != k ) {
         for(int h = k ; h < j; ++h ) {
-            mat[i][h] = ball_color;
+            m_mat[i][h] = ballColor;
             gotoxy( 4 * h + 61 , 2 * i + 11 );
-            if( ball_color == 'b' ) {
-                ++blackCount;
-                --whiteCount;
+            if( ballColor == 'b' ) {
+                ++m_blackCount;
+                --m_whiteCount;
             } else  {
-                --blackCount;
-                ++whiteCount;
+                --m_blackCount;
+                ++m_whiteCount;
             }
-            ( ball_color == 'b' ) ?  std::cout << "\u25CB" << std::flush : std::cout << "\u25CF" << std::flush ;
+            ( ballColor == 'b' ) ?  std::cout << "\u25CB" << std::flush : std::cout << "\u25CF" << std::flush ;
         }
         return true;
     }
@@ -143,32 +139,32 @@ bool GameBoard::checkRight()
 
 bool GameBoard::checkUp()
 {
-    int i = (_Y - 11 ) / 2 - 1;
-    int j = (_X - 61 ) / 4;
+    int i = (m_yCoord - 11 ) / 2 - 1;
+    int j = (m_xCoord - 61 ) / 4;
     int k = i;
-    char ball_color;
-    if ( color % 2 == 0 ) {
-        ball_color = 'b';
+    char ballColor;
+    if ( m_color % 2 == 0 ) {
+        ballColor = 'b';
     } else {
-        ball_color = 'c';
+        ballColor = 'c';
     }
 
-    while ( i >= 0 && mat[i][j]!=0 && mat[i][j] != ball_color ) {
+    while ( i >= 0 && m_mat[i][j]!=0 && m_mat[i][j] != ballColor ) {
         --i;
     }
 
-    if ( i != -1 && mat[i][j]!=0 && i != k ) {
+    if ( i != -1 && m_mat[i][j]!=0 && i != k ) {
         for(int h = i + 1; h <= k; ++h ) {
-            mat[h][j] = ball_color;
+            m_mat[h][j] = ballColor;
             gotoxy( 4 * j + 61 , 2 * h + 11 );
-            if( ball_color == 'b' ) {
-                ++blackCount;
-                --whiteCount;
+            if( ballColor == 'b' ) {
+                ++m_blackCount;
+                --m_whiteCount;
             } else  {
-                --blackCount;
-                ++whiteCount;
+                --m_blackCount;
+                ++m_whiteCount;
             }
-            ( ball_color == 'b' ) ?  std::cout << "\u25CB" << std::flush : std::cout << "\u25CF" << std::flush ;
+            ( ballColor == 'b' ) ?  std::cout << "\u25CB" << std::flush : std::cout << "\u25CF" << std::flush ;
         }
         return true;
     }
@@ -177,33 +173,33 @@ bool GameBoard::checkUp()
 
 bool GameBoard::checkDown()
 {
-    int i = (_Y - 11 ) / 2 + 1;
-    int j = (_X - 61 ) / 4;
+    int i = (m_yCoord - 11 ) / 2 + 1;
+    int j = (m_xCoord - 61 ) / 4;
     int k = i;
-    char ball_color;
+    char ballColor;
 
-    if ( color % 2 == 0 ) {
-        ball_color = 'b';
+    if ( m_color % 2 == 0 ) {
+        ballColor = 'b';
     } else {
-        ball_color = 'c';
+        ballColor = 'c';
     }
 
-    while ( i <= 7 && mat[i][j]!=0 && mat[i][j] != ball_color ) {
+    while ( i <= 7 && m_mat[i][j]!=0 && m_mat[i][j] != ballColor ) {
         ++i;
     }
 
-    if ( i != 8 && mat[i][j]!=0 && i != k ) {
+    if ( i != 8 && m_mat[i][j]!=0 && i != k ) {
         for(int h = k; h < i; ++h ) {
-            mat[h][j] = ball_color;
+            m_mat[h][j] = ballColor;
             gotoxy( 4 * j + 61 , 2 * h + 11 );
-            if( ball_color == 'b' ) {
-                ++blackCount;
-                --whiteCount;
+            if( ballColor == 'b' ) {
+                ++m_blackCount;
+                --m_whiteCount;
             } else {
-                --blackCount;
-                ++whiteCount;
+                --m_blackCount;
+                ++m_whiteCount;
             }
-            ( ball_color == 'b' ) ?  std::cout << "\u25CB" << std::flush : std::cout << "\u25CF" << std::flush ;
+            ( ballColor == 'b' ) ?  std::cout << "\u25CB" << std::flush : std::cout << "\u25CF" << std::flush ;
         }
         return true;
     }
@@ -212,35 +208,35 @@ bool GameBoard::checkDown()
 
 bool GameBoard::checkUpLeftDiagonal()
 {
-    int i = (_Y - 11 ) / 2 - 1;
-    int j = (_X - 61 ) / 4 - 1;
+    int i = (m_yCoord - 11 ) / 2 - 1;
+    int j = (m_xCoord - 61 ) / 4 - 1;
     int k = i;
     int l = j;
-    char ball_color;
+    char ballColor;
 
-    if ( color % 2 == 0 ) {
-        ball_color = 'b';
+    if ( m_color % 2 == 0 ) {
+        ballColor = 'b';
     } else {
-        ball_color = 'c';
+        ballColor = 'c';
     }
 
-    while ( i >= 0 && j>=0  && mat[i][j]!=0 && mat[i][j] != ball_color ) {
+    while ( i >= 0 && j>=0  && m_mat[i][j]!=0 && m_mat[i][j] != ballColor ) {
         --i;
         --j;
     }
 
-    if ( i != -1 && j != -1 && mat[i][j]!=0 && i != k ) {
+    if ( i != -1 && j != -1 && m_mat[i][j]!=0 && i != k ) {
         for(int h = i+1, m = j + 1;  h <= k, m <= l; ++h, ++m  ) {
-            mat[h][m] = ball_color;
+            m_mat[h][m] = ballColor;
             gotoxy( 4 * m + 61 , 2 * h + 11 );
-            if( ball_color == 'b' ) {
-                ++blackCount;
-                --whiteCount;
+            if( ballColor == 'b' ) {
+                ++m_blackCount;
+                --m_whiteCount;
             } else  {
-                --blackCount;
-                ++whiteCount;
+                --m_blackCount;
+                ++m_whiteCount;
             }
-            ( ball_color == 'b' ) ?  std::cout << "\u25CB" << std::flush : std::cout << "\u25CF" << std::flush ;
+            ( ballColor == 'b' ) ?  std::cout << "\u25CB" << std::flush : std::cout << "\u25CF" << std::flush ;
         }
         return true;
     }
@@ -249,35 +245,35 @@ bool GameBoard::checkUpLeftDiagonal()
 
 bool GameBoard::checkDownRightDiagonal()
 {
-    int i = (_Y - 11 ) / 2 + 1;
-    int j = (_X - 61 ) / 4 + 1;
+    int i = (m_yCoord - 11 ) / 2 + 1;
+    int j = (m_xCoord - 61 ) / 4 + 1;
     int k = i;
     int l = j;
-    char ball_color;
+    char ballColor;
 
-    if ( color % 2 == 0 ) {
-        ball_color = 'b';
+    if ( m_color % 2 == 0 ) {
+        ballColor = 'b';
     } else {
-        ball_color = 'c';
+        ballColor = 'c';
     }
 
-    while ( i <=7 && j<=7  && mat[i][j]!=0 && mat[i][j] != ball_color ) {
+    while ( i <=7 && j<=7  && m_mat[i][j]!=0 && m_mat[i][j] != ballColor ) {
         ++i;
         ++j;
     }
 
-    if ( i != 8 && j != 8 && mat[i][j]!=0 && i != k ) {
+    if ( i != 8 && j != 8 && m_mat[i][j]!=0 && i != k ) {
         for(int h = k, m = l;  h < i, m < j; ++h, ++m  ) {
-            mat[h][m] = ball_color;
+            m_mat[h][m] = ballColor;
             gotoxy( 4 * m + 61 , 2 * h + 11 );
-            if( ball_color == 'b' ) {
-                ++blackCount;
-                --whiteCount;
+            if( ballColor == 'b' ) {
+                ++m_blackCount;
+                --m_whiteCount;
             } else  {
-                --blackCount;
-                ++whiteCount;
+                --m_blackCount;
+                ++m_whiteCount;
             }
-            ( ball_color == 'b' ) ?  std::cout << "\u25CB" << std::flush : std::cout << "\u25CF" << std::flush ;
+            ( ballColor == 'b' ) ?  std::cout << "\u25CB" << std::flush : std::cout << "\u25CF" << std::flush ;
         }
         return true;
     }
@@ -286,36 +282,36 @@ bool GameBoard::checkDownRightDiagonal()
 
 bool GameBoard::checkUpRightDiagonal()
 {
-    int i = (_Y - 11 ) / 2 - 1;
-    int j = (_X - 61 ) / 4 + 1;
+    int i = (m_yCoord - 11 ) / 2 - 1;
+    int j = (m_xCoord - 61 ) / 4 + 1;
     int k = i;
     int l = j;
-    char ball_color;
+    char ballColor;
 
-    if ( color % 2 == 0 ) {
-        ball_color = 'b';
+    if ( m_color % 2 == 0 ) {
+        ballColor = 'b';
     } else {
-        ball_color = 'c';
+        ballColor = 'c';
     }
 
-    while ( i >= 0 && j<=7  && mat[i][j]!=0 && mat[i][j] != ball_color ) {
+    while ( i >= 0 && j<=7  && m_mat[i][j]!=0 && m_mat[i][j] != ballColor ) {
         --i;
         ++j;
     }
 
-    if ( i != -1 && j != 8 && mat[i][j]!=0 && i != k ) {
+    if ( i != -1 && j != 8 && m_mat[i][j]!=0 && i != k ) {
         for(int h = k, m = l;  h > i, m < j; --h, ++m  ) {
-            mat[h][m] = ball_color;
+            m_mat[h][m] = ballColor;
             gotoxy( 4 * m + 61 , 2 * h + 11 );
-            if( ball_color == 'b' ) {
-                ++blackCount;
-                --whiteCount;
+            if( ballColor == 'b' ) {
+                ++m_blackCount;
+                --m_whiteCount;
             } else  {
-                --blackCount;
-                ++whiteCount;
+                --m_blackCount;
+                ++m_whiteCount;
             }
 
-            ( ball_color == 'b' ) ?  std::cout << "\u25CB" << std::flush : std::cout << "\u25CF" << std::flush ;
+            ( ballColor == 'b' ) ?  std::cout << "\u25CB" << std::flush : std::cout << "\u25CF" << std::flush ;
         }
         return true;
     }
@@ -324,148 +320,101 @@ bool GameBoard::checkUpRightDiagonal()
 
 bool GameBoard::checkDownLeftDiagonal()
 {
-    int i = (_Y - 11 ) / 2 + 1;
-    int j = (_X - 61 ) / 4 - 1;
+    int i = (m_yCoord - 11 ) / 2 + 1;
+    int j = (m_xCoord - 61 ) / 4 - 1;
     int k = i;
     int l = j;
-    char ball_color;
+    char ballColor;
 
-    if ( color % 2 == 0 ) {
-        ball_color = 'b';
+    if ( m_color % 2 == 0 ) {
+        ballColor = 'b';
     } else {
-        ball_color = 'c';
+        ballColor = 'c';
     }
 
-    while ( i <= 7 && j>=0  && mat[i][j]!=0 && mat[i][j] != ball_color ) {
+    while ( i <= 7 && j>=0  && m_mat[i][j]!=0 && m_mat[i][j] != ballColor ) {
         ++i;
         --j;
     }
 
-    if ( i != 8 && j != -1 && mat[i][j]!=0 && i != k ) {
+    if ( i != 8 && j != -1 && m_mat[i][j]!=0 && i != k ) {
         for(int h = k , m = l;  h < i, m > j; ++h, --m  ) {
-            mat[h][m] = ball_color;
+            m_mat[h][m] = ballColor;
             gotoxy( 4 * m + 61 , 2 * h + 11 );
-            if( ball_color == 'b' ) {
-                ++blackCount;
-                --whiteCount;
+            if( ballColor == 'b' ) {
+                ++m_blackCount;
+                --m_whiteCount;
             } else  {
-                --blackCount;
-                ++whiteCount;
+                --m_blackCount;
+                ++m_whiteCount;
             }
-            ( ball_color == 'b' ) ?  std::cout << "\u25CB" << std::flush : std::cout << "\u25CF" << std::flush ;
+            ( ballColor == 'b' ) ?  std::cout << "\u25CB" << std::flush : std::cout << "\u25CF" << std::flush ;
         }
         return true;
     }
     return false;
 }
 
-bool GameBoard::check ()
+bool GameBoard::check()
 {
 	return checkLeft() | checkRight() | checkUp() | checkDown() | checkUpLeftDiagonal() | checkDownRightDiagonal() | checkUpRightDiagonal() | checkDownLeftDiagonal();
 }
 
 void GameBoard::printWinner() {
 
-    int coordinate_x = 67;
-    int coordinate_y = 28;
+    int coordX = 67;
+    int coordY = 28;
 
-    gotoxy(coordinate_x,coordinate_y);
+    gotoxy(coordX, coordY);
     std::cout << "\033[32;1m The game is over \033[0m";
 
-    if( blackCount > whiteCount ) {
-        gotoxy(coordinate_x + 2,coordinate_y + 2);
+    if( m_blackCount > m_whiteCount ) {
+        gotoxy(coordX + 2, coordY + 2);
         std::cout << "\033[32;1m Black Wins!\033[0m";
     }
-    else if( blackCount < whiteCount ) {
-        gotoxy(coordinate_x + 2,coordinate_y + 2);
+    else if( m_blackCount < m_whiteCount ) {
+        gotoxy(coordX + 2, coordY + 2);
         std::cout << "\033[32;1m White Wins! \033[0m";
     } else {
-        gotoxy(coordinate_x + 2,coordinate_y + 2);
+        gotoxy(coordX + 2, coordY + 2);
         std::cout << "\033[32;1m It is a draw ! \033[0m";
     }
 
-    gotoxy(0,coordinate_y + 7);
-}
-
-void GameBoard::updateCountBlas( int black, int white ) {
-
-	gotoxy( 66 , 8 );
-	std::cout<<"Black "<< black <<" vs "<<white<<" white";
-	std::cout << std::flush;
+    gotoxy(0, coordY + 7);
 }
 
 void GameBoard::handleKeyPress()
 {
-    gotoxy(_X, _Y);
+    gotoxy(m_xCoord, m_yCoord);
     std::cout << std::flush;
     usleep(10000);
 
-    if (k.kbhit()) {
-        switch (k.getch()) {
-            case 'w': {
-                _Y -= 2;
-                if (_Y < 11) {
-                    _Y = 25;
-                }
+    if (m_key.kbhit()) {
+        switch (static_cast<KeyPressHandler::Key>(m_key.getch())) {
+            case KeyPressHandler::Key::UP : {
+                KeyPressHandler::handleUp(m_yCoord);
                 break;
             }
-            case 's': {
-                _Y += 2;
-                if (_Y > 25) {
-                    _Y = 11;
-                }
+            case KeyPressHandler::Key::DOWN : {
+                KeyPressHandler::handleDown(m_yCoord);
                 break;
             }
-            case 'a': {
-                _X -= 4;
-                if (_X < 61) {
-                    _X = 89;
-                }
+            case KeyPressHandler::Key::LEFT: {
+                KeyPressHandler::handleLeft(m_xCoord);
                 break;
             }
-            case 'd': {
-                _X += 4;
-                if (_X > 89) {
-                    _X = 61;
-                }
+            case KeyPressHandler::Key::RIGHT : {
+                KeyPressHandler::handleRight(m_xCoord);
                 break;
             }
-            case 27 : {
-                system("clear");
-                gotoxy(0, 0);
-                std::cout << std::flush;
-                exit(0);
+            case KeyPressHandler::Key::ESC : {
+                KeyPressHandler::handleEsc();
                 break;
             }
-            case 32 : {
-                if (mat[ (_Y - 11 ) / 2 ][ ( _X - 61 ) / 4] == 0 ) {
+            case KeyPressHandler::Key::SPACE : {
+                if (m_mat[ (m_yCoord - 11 ) / 2 ][ ( m_xCoord - 61 ) / 4] == 0 ) {
                     if (check()) {
-                        gotoxy( 69 , 6 );
-                        std::cout << std::flush;
-                        if(color % 2 == 0) {
-                            mat[ (_Y - 11 ) / 2 ][ ( _X - 61 ) / 4] = 'b';
-                            ++blackCount;
-                            std::cout << "\033[32;1m White's turn \033[0m";
-                            gotoxy(_X,_Y);
-                            std::cout << "\u25CB";//sev
-                            std::cout << std::flush;
-                        } else {
-                            mat[ (_Y - 11 ) / 2 ][ ( _X - 61 ) / 4] = 'c';
-                            ++whiteCount;
-                            std::cout << "\033[32;1m Black's turn \033[0m";
-
-                            gotoxy(_X,_Y);
-
-                            std::cout << "\u25CF";//spitak
-                            std::cout << std::flush;
-                        }
-                        ++color;
-                        if(blackCount + whiteCount == 64) {
-                            isRunning = false;
-                        }
-                        updateCountBlas( blackCount , whiteCount );
-                        gotoxy(_X,_Y);
-                        std::cout << std::flush;
+                        m_isRunning = KeyPressHandler::handleSpace(m_mat, m_xCoord, m_yCoord, m_blackCount, m_whiteCount, m_color);
                     }
                 }
                 break;
@@ -473,5 +422,4 @@ void GameBoard::handleKeyPress()
         }
     }
 }
-
 
